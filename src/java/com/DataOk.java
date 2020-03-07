@@ -2,40 +2,33 @@ package com;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import static java.lang.System.out;
-import java.security.MessageDigest;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import static javafx.application.Platform.exit;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-
 
 public class DataOk extends HttpServlet {
- public static String getSha256(String value) {
-    try{
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(value.getBytes());
-        return bytesToHex(md.digest());
-    } catch(Exception ex){
-        throw new RuntimeException(ex);
+
+    public static String getSha256(String value) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(value.getBytes());
+            return bytesToHex(md.digest());
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
- }
- private static String bytesToHex(byte[] bytes) {
-    StringBuffer result = new StringBuffer();
-    for (byte b : bytes) result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
-    return result.toString();
- }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuffer result = new StringBuffer();
+        for (byte b : bytes) {
+            result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+        }
+        return result.toString();
+    }
+
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
@@ -44,30 +37,22 @@ public class DataOk extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String cpassword = request.getParameter("password1");
-       String hashed=getSha256(password);
+        String hashed = getSha256(password);
 
-        User user=new User();
+        User user = new User();
         user.setName(username);
         user.setPassword(hashed);
         user.setEmail(email);
-        RegistrationBO registrationBO=new RegistrationBO();
-        int i=registrationBO.saveUser(user);
-        
-         if(i!=0){
-             RequestDispatcher dispatcher=request.getRequestDispatcher("registeredUser.jsp");
-             dispatcher.forward(request, response);
-            
-      }
-      else{
-        out.println("failed to insert the data");
-      }
-                 
-  
-          
-                   
-  
-               
+        RegistrationBO registrationBO = new RegistrationBO();
+        int i = registrationBO.saveUser(user);
 
+        if (i != 0) {
+            RequestDispatcher dispatcher = request.getRequestDispatcher("registeredUser.jsp");
+            dispatcher.forward(request, response);
+
+        } else {
+            out.println("failed to insert the data");
+        }
 
     }
 }
